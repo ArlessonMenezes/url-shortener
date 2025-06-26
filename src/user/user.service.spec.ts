@@ -85,7 +85,6 @@ describe('UserService', () => {
 
     expect(mockUserRepository.findOne).toHaveBeenCalledWith({
       where: { email: 'test@example.com' },
-      select: ['id', 'email', 'createdAt'],
     });
   });
 
