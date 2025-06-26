@@ -1,5 +1,6 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import * as bcrypt from 'bcrypt';
+import { ShortUrl } from "src/short-url/entities/short-url.entity";
 
 @Entity()
 export class User {
@@ -12,8 +13,8 @@ export class User {
   @Column()
   password: string;
 
-  // @OneToMany(() => ShortUrl, shortUrl => shortUrl.user)
-  // urls: ShortUrl[];
+  @OneToMany(() => ShortUrl, shortUrl => shortUrl.user)
+  urls: ShortUrl[];
 
   @BeforeInsert()
   async hashPassword() {
