@@ -2,7 +2,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { IsNull, Repository } from 'typeorm';
 import { ShortUrl } from './entities/short-url.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/user/entities/user.entity';
 import { nanoid } from 'nanoid';
 import { PaginationDto } from 'src/common/pagination/pagination.dto';
 import { UpdateShortUrlDto } from './dtos/update-short-url.dto';
@@ -16,10 +15,7 @@ export class ShortUrlService {
   ){}
 
   async shortenUrl(
-    createShortUrlDto: CreateShortUrlDto,
-    user?: Partial<User> | undefined,
-  )
-  {
+    createShortUrlDto: CreateShortUrlDto, user?: { id: number }) {
     const shortCode = nanoid(6);
     
     const shortUrl = this.shortUrlRepository.create({

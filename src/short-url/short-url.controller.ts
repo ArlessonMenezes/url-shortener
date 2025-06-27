@@ -1,11 +1,11 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { ShortUrlService } from './short-url.service';
 import { CreateShortUrlDto } from './dtos/create-short-url.dto';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UpdateShortUrlDto } from './dtos/update-short-url.dto';
 import { PaginationDto } from 'src/common/pagination/pagination.dto';
-import { OptionalJwtAuthGuard } from 'src/auth/guards/optional-jwt-auth.guard';
+import { OptionalAuthGuard } from 'src/auth/guards/optional-jwt-auth.guard';
 
 @ApiTags('Short URLs')
 @Controller('short-url')
@@ -15,7 +15,8 @@ export class ShortUrlController {
   ) {}
 
   @Post('shorten')
-  @UseGuards(OptionalJwtAuthGuard)
+  @UseGuards(OptionalAuthGuard)
+  @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Encurtar URL' })
   @ApiResponse({ status: 201, description: 'URL encurtada com sucesso' })
   @ApiResponse({ status: 400, description: 'Erro de validação' })
@@ -23,7 +24,7 @@ export class ShortUrlController {
     @Body() createShortUrlDto: CreateShortUrlDto,
     @Req() req: any,
   ) {
-    const user = req.user || undefined;
+    const user = req.user ? { id: req.user.sub } : undefined;
     return this.shortUrlService.shortenUrl(createShortUrlDto, user);
   };
 
@@ -49,7 +50,7 @@ export class ShortUrlController {
   }
 
   @Patch(':id')
-  @ApiBearerAuth()
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Atualizar URL encurtada do usuário' })
   @ApiResponse({ status: 200, description: 'URL atualizada com sucesso' })
@@ -63,7 +64,7 @@ export class ShortUrlController {
   }
 
   @Delete(':id')
-  @ApiBearerAuth()
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Excluir URL encurtada do usuário' })
   @ApiResponse({ status: 200, description: 'URL excluída com sucesso' })
